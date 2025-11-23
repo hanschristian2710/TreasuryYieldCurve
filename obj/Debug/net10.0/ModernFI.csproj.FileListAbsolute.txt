@@ -71,8 +71,6 @@
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/compressed/3c9c4yicb7-{0}-w97mql0d9w-w97mql0d9w.gz
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/compressed/w96309k8vu-{0}-j8lzlu28q6-j8lzlu28q6.gz
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/compressed/adbt9idjjz-{0}-u1n4jc5v46-u1n4jc5v46.gz
-/Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/compressed/e5bgdio3e4-{0}-1k60j4ldbo-1k60j4ldbo.gz
-/Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/compressed/6dbjgotf5t-{0}-1k60j4ldbo-1k60j4ldbo.gz
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/staticwebassets.build.json
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/staticwebassets.build.json.cache
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/staticwebassets.development.json
@@ -83,3 +81,6 @@
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/ModernFI.pdb
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/ModernFI.genruntimeconfig.cache
 /Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/ref/ModernFI.dll
+/Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/ModernFI.sourcelink.json
+/Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/compressed/e5bgdio3e4-{0}-su2bqax2ew-su2bqax2ew.gz
+/Users/hchristian/Downloads/ModernFI/ModernFI/obj/Debug/net10.0/compressed/6dbjgotf5t-{0}-su2bqax2ew-su2bqax2ew.gz

@@ -16,8 +16,90 @@ public class FiscalDataService : IFiscalDataService
     
     public FiscalDataService(HttpClient httpClient)
     {
-        this._httpClient = httpClient;   
+        _httpClient = httpClient;   
     }
+
+    public async Task<TreasuryYieldAPIResponse?> GetAverageInterestRate(
+        DateTime? start = null, 
+        DateTime? end = null, 
+        int pageSize = 50)
+    {
+        try
+        {
+            var dataSet = FiscalDataSet.AverageInterestRate;
+            var requestUrl = $"{_fiscalDataBaseUrl}{GetEndpoint(dataSet)}";
+
+            // Query Filter
+            var query = new List<string>();
+
+            // Date filter
+            if (start.HasValue && end.HasValue)
+            {
+                string startStr = start.Value.ToString("yyyy-MM-dd");
+                string endStr = end.Value.ToString("yyyy-MM-dd");
+                query.Add($"record_date:gte:{startStr},record_date:lte:{endStr}");
+            }
+
+            // Sort by latest date
+            query.Add("sort=-record_date");
+
+            // Page size
+            query.Add($"page[size]={pageSize}");
+
+            if (query.Count > 0)
+                requestUrl += $"?filter={string.Join("&", query)}";
+
+            var response = await _httpClient.GetFromJsonAsync<TreasuryYieldAPIResponse>(requestUrl);
+            if (response is null || response.data is null || response.data.Count <= 0)
+                return null;
+            
+            return response;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to fetch yields data: {ex.Message}");
+        }
+    }
+
+    public async Task<TreasuryYieldAPIResponse?> GetAverageInterestRateByContinuationLink(
+        string link,
+        DateTime? start = null, 
+        DateTime? end = null)
+    {
+        try
+        {
+            var requestUrl = $"{_fiscalDataBaseUrl}{GetEndpoint(FiscalDataSet.AverageInterestRate)}";
+
+            // Query Filter
+            var query = new List<string>();
+
+            // Date filter
+            if (start.HasValue && end.HasValue)
+            {
+                string startStr = start.Value.ToString("yyyy-MM-dd");
+                string endStr = end.Value.ToString("yyyy-MM-dd");
+                query.Add($"record_date:gte:{startStr},record_date:lte:{endStr}");
+            }
+
+            query.Add(link);
+
+            if (query.Count > 0)
+                requestUrl += $"?filter={string.Join("&", query)}";
+
+            var response = await _httpClient.GetFromJsonAsync<TreasuryYieldAPIResponse>(requestUrl);
+            if (response is null || response.data is null || response.data.Count <= 0)
+                return null;
+            
+            return response;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to fetch paginated yields: {ex.Message}");
+        }
+    }
+
+
+    #region Utility
 
     /// <summary>
     /// Helper to get specific endpoints from the dataset
@@ -35,25 +117,6 @@ public class FiscalDataService : IFiscalDataService
         }
     }
 
-    /// <summary>
-    /// Request average interest rate
-    /// </summary>
-    /// <returns>Collections of treasury yield information</returns>
-    public async Task<List<TreasuryYield>> GetAverageInterestRate()
-    {
-        try
-        {
-            // Invoke the fiscal data api for interest rate
-            var requestUrl = $"{_fiscalDataBaseUrl}{GetEndpoint(FiscalDataSet.AverageInterestRate)}";
-            var response = await _httpClient.GetFromJsonAsync<TreasuryYieldAPIResponse>(requestUrl);
-            if (response is null || response.data is null || response.data.Count <= 0)
-                return new List<TreasuryYield>();
-            
-            return response.data;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
-    }
+    #endregion
+    
 }

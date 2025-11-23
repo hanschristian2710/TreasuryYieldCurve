@@ -1,10 +1,14 @@
 using ModernFI.Components;
+using ModernFI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<IFiscalDataService, FiscalDataService>();
+builder.Services.AddHttpClient<IFiscalDataService, FiscalDataService>();
 
 var app = builder.Build();
 
