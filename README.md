@@ -7,8 +7,6 @@ This project allows users to:
 - Submit and simulate deposit orders based on selected treasury rates, terms, and dates.
 - View historical deposit order submissions.
 
-Third-party API Data Used: https://site.financialmodelingprep.com/developer/docs/stable/treasury-rates
-
 Compound Calculation: Daily
 
 Chart Explanation
@@ -59,3 +57,10 @@ Can be updated in `launchSettings.json`
 Download [here](https://drive.google.com/file/d/1pElt379WT3VSRcPix7zOMq7RbxmIwPFC/view?usp=sharing) for the demo video
 
 ![Preview](assets/demo.gif)
+
+## Limitations
+- **Third-Party API Used:** 
+    Data is sourced from the Financial Modeling Prep Treasury Rates API. [Source](https://site.financialmodelingprep.com/developer/docs/stable/treasury-rates)
+- **Historical Data Range & Daily Limit Restriction:** The API vendor only allows fetching historical treasury rates for a maximum range of **90 days** at a time and maximum of 250 calls a day.
+- **Static Term Intervals:**
+    Treasury maturities (1M, 2M, 3M, 6M, 1Y, etc.) are spaced statically, laid out in the above.
