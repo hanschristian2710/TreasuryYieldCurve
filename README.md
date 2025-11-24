@@ -9,13 +9,19 @@ This project allows users to:
 
 Third-party API Data Used: https://site.financialmodelingprep.com/developer/docs/stable/treasury-rates
 
+Compound Calculation: Daily
+
 ## Prerequisites
 
 Project is developed in Mac and using VS Code.
 
+Stack:
+- Web Framework: Blazor
+- C# .NET Core
+
 Before running the project, ensure you have the following installed:
 - [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
-- [Visual Studio 2022](https://visualstudio.microsoft.com/) for windows or [VS Code](https://code.visualstudio.com/) for Mac
+- [VS Code](https://code.visualstudio.com/) for Mac
 
 VS Code Extensions needed:
 - [C# DEV Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
@@ -28,3 +34,6 @@ Open Terminal:
 
 Listening Port: `http://localhost:5028`
 Can be updated in `launchSettings.json`
+
+## Demo
+![App Demo](assets/demo.gif)
