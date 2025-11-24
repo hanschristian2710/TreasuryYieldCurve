@@ -27,6 +27,10 @@ Treasury terms are irregularly spaced, so points on the x-axis are not evenly di
 - 20Y (365d, 540d, 730d, 1095d, 1460d, 1825d, 2190d, 2555d, 2920d, 3650d, 4380d, 5475d, 6570d, 7300d)
 - 30Y (365d, 540d, 730d, 1095d, 1460d, 1825d, 2190d, 2555d, 2920d, 3650d, 4380d, 5475d, 6570d, 7300d, 8395d, 9125d, 10950d)
 
+Label Mapping
+- 30d is 1M
+- 365d is 1Y
+
 ## Prerequisites
 
 Project is developed in Mac and using VS Code.
