@@ -11,6 +11,24 @@ Third-party API Data Used: https://site.financialmodelingprep.com/developer/docs
 
 Compound Calculation: Daily
 
+Chart Explanation
+- **X-axis** represents days until maturity 
+- **Y-axis** represents growth of the deposited amount
+
+Treasury terms are irregularly spaced, so points on the x-axis are not evenly distributed. They are split on the x-axis as below:
+- 1M (7d, 15d, 30d)
+- 2M (7d, 15d, 30d, 60d)
+- 3M (7d, 15d, 30d, 60d, 90d)
+- 6M (7d, 15d, 30d, 60d, 90d, 120d, 150d, 180d)
+- 1Y (30d, 60d, 90d, 120d, 150d, 180d, 365d)
+- 2Y (30d, 60d, 180d, 365d, 540d, 730d)
+- 3Y (60d, 180d, 365d, 540d, 730d, 1095d)
+- 5Y (180d, 365d, 540d, 730d, 1095d, 1825d)
+- 7Y (365d, 540d, 730d, 1095d, 1460d, 1825d, 2190d, 2555d)
+- 10Y (365d, 540d, 730d, 1095d, 1460d, 1825d, 2190d, 2555d, 2920d, 3650d)
+- 20Y (365d, 540d, 730d, 1095d, 1460d, 1825d, 2190d, 2555d, 2920d, 3650d, 4380d, 5475d, 6570d, 7300d)
+- 30Y (365d, 540d, 730d, 1095d, 1460d, 1825d, 2190d, 2555d, 2920d, 3650d, 4380d, 5475d, 6570d, 7300d, 8395d, 9125d, 10950d)
+
 ## Prerequisites
 
 Project is developed in Mac and using VS Code.
