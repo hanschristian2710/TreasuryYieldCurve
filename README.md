@@ -26,6 +26,8 @@ Before running the project, ensure you have the following installed:
 VS Code Extensions needed:
 - [C# DEV Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
 
+Additional Blazor Doc: [Blazor](https://dotnet.microsoft.com/en-us/learn/aspnet/blazor-tutorial/install)
+
 ## Running project:
 Open Terminal:
 1. Restore Dependencies (Only needed for first time) `dotnet restore`
@@ -35,5 +37,7 @@ Open Terminal:
 Listening Port: `http://localhost:5028`
 Can be updated in `launchSettings.json`
 
-## Demo
-![App Demo](assets/demo.gif)
+## Demo Video
+Download [here](https://drive.google.com/file/d/1pElt379WT3VSRcPix7zOMq7RbxmIwPFC/view?usp=sharing) for the demo video
+
+![Preview](assets/demo.gif)
