@@ -7,8 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IFiscalDataService, FiscalDataService>();
-builder.Services.AddHttpClient<IFiscalDataService, FiscalDataService>();
+builder.Services.AddScoped<ITreasuryDataService, TreasuryDataService>();
+builder.Services.AddHttpClient<ITreasuryDataService, TreasuryDataService>();
 
 var app = builder.Build();
 

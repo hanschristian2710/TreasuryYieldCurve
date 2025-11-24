@@ -1,0 +1,242 @@
+﻿@page "/treasury-yield-curve"
+@using ModernFI.Services
+@using ModernFI.Models
+@inject ITreasuryDataService FiscalService
+@inject IJSRuntime JS
+
+<h3>Yield Curve & Deposit Term</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-warning">@ErrorMessage</div>
+}
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label class="form-label"><strong>Date (Source Rate)</strong></label>
+        <select class="form-select" @bind="SelectedSimulationDate">
+            @foreach (var d in AvailableDates)
+            {
+                <option value="@d">@d</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label"><strong>Term</strong></label>
+        <select class="form-select" @bind="SelectedTerm">
+            @foreach (var t in Terms)
+            {
+                <option value="@t">@t</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label"><strong>Deposit Amount ($)</strong></label>
+        <input type="number" class="form-control" @bind="DepositAmount" />
+    </div>
+</div>
+
+<button class="btn btn-primary mb-3"
+    @onclick="PlotDepositYield"
+    data-bs-toggle="tooltip"
+    data-bs-placement="top"
+    title="Simulate growth from past historical rates">Simulate Growth</button>
+
+<button class="btn btn-success mb-3"
+    @onclick="SubmitOrder"
+    data-bs-toggle="tooltip"
+    data-bs-placement="top"
+    title="Submit deposit term (Only allowed on latest date)">Submit Order</button>
+
+<div class="mt-3" style="max-width: 1000px;">
+    <canvas id="yieldCurveChart" width="250" height="150"></canvas>
+</div>
+
+@if (DepositHistory.Any())
+{
+    <h4>Term Deposit History</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Submit Date</th>
+                <th>Term</th>
+                <th>Amount</th>
+                <th>Rate (%)</th>
+                <th>Projected Balance ($)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in DepositHistory)
+            {
+                <tr>
+                    <td>@o.OrderDate.ToShortDateString()</td>
+                    <td>@o.Term</td>
+                    <td>@o.Amount.ToString("N2")</td>
+                    <td>@o.Rate</td>
+                    <td>@o.ProjectedBalance.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string? ErrorMessage;
+    private string SelectedSimulationDate { get; set; } = "";
+    private string SelectedTerm { get; set; } = "1M";
+    private decimal DepositAmount { get; set; } = 1000;
+    private List<TreasuryYield> YieldData = new();
+    private List<string> AvailableDates = new();
+    private List<string> Terms = new() { "1M","2M","3M","6M","1Y","2Y","3Y","5Y","7Y","10Y","20Y","30Y" };
+    private List<DepositOrder> DepositHistory = new List<DepositOrder>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the treasury rates and populate the available dates (90 days date range)
+        YieldData = await FiscalService.GetTreasuryRates();
+        AvailableDates = YieldData.Select(y => y.date).OrderByDescending(d => d).ToList();
+    }
+
+    private async Task PlotDepositYield()
+    {
+        ErrorMessage = string.Empty;
+
+        string dateToUse = string.IsNullOrEmpty(SelectedSimulationDate)
+            ? YieldData.OrderByDescending(y => y.date).First().date
+            : SelectedSimulationDate;
+
+        var selectedYield = YieldData.FirstOrDefault(y => y.date == dateToUse);
+        if (selectedYield == null) return;
+
+        decimal rateToUse = GetRateForTerm(selectedYield, SelectedTerm);
+        var (labels, balances) = CalculateBalances(rateToUse, DepositAmount, SelectedTerm);
+
+        await JS.InvokeVoidAsync("renderYieldCurve", labels.ToArray(), balances.ToArray(), $"Term ({SelectedTerm})");
+    }
+
+    /// <summary>
+    /// Term order deposit handler
+    /// </summary>
+    /// <returns></returns>
+    private async Task SubmitOrder()
+    {
+        if (!string.IsNullOrEmpty(SelectedSimulationDate) && SelectedSimulationDate != AvailableDates.FirstOrDefault()) {
+            ErrorMessage = "Orders must use today's latest available rate.";
+            return;
+        }
+
+        ErrorMessage = string.Empty;
+
+        // Always use latest rate from latest date
+        var latestYield = YieldData.OrderByDescending(y => y.date).First();
+        decimal rate = GetRateForTerm(latestYield, SelectedTerm);
+        var (labels, balances) = CalculateBalances(rate, DepositAmount, SelectedTerm);
+
+        DepositHistory.Add(new DepositOrder
+        {
+            OrderDate = DateTime.Now,
+            Term = SelectedTerm,
+            Amount = DepositAmount,
+            Rate = rate,
+            ProjectedBalance = balances.Last()
+        });
+
+        await PlotDepositYield();
+    }
+
+    private decimal GetRateForTerm(TreasuryYield y, string term) => term switch
+    {
+        "1M" => y.month1,
+        "2M" => y.month2,
+        "3M" => y.month3,
+        "6M" => y.month6,
+        "1Y" => y.year1,
+        "2Y" => y.year2,
+        "3Y" => y.year3,
+        "5Y" => y.year5,
+        "7Y" => y.year7,
+        "10Y" => y.year10,
+        "20Y" => y.year20,
+        "30Y" => y.year30,
+        _ => 0
+    };
+
+    /// <summary>
+    /// Calculate the term deposit balances
+    /// </summary>
+    /// <param name="rate"></param>
+    /// <param name="amount"></param>
+    /// <param name="term"></param>
+    /// <returns></returns>
+    private (List<string> labels, List<decimal> balances) CalculateBalances(decimal rate, decimal amount, string term)
+    {
+        var splits = GetSplitPoints(term);
+
+        // Get daily rate: Interest rate (%) / 100 / 365 days
+        decimal dailyRate = rate / 100m / 365m;
+
+        var balances = new List<decimal>();
+        var labels = new List<string>();
+
+        foreach (var days in splits)
+        {
+            // daily compounding: principal (1 + daily rate) ^ days
+            decimal balance = amount * (decimal)Math.Pow((double)(1 + dailyRate), days);
+            balances.Add(Math.Round(balance, 2));
+
+            string label = days switch
+            {
+                7 => "7d",
+                15 => "15d",
+                30 => "1M",
+                60 => "2M",
+                90 => "3M",
+                120 => "4M",
+                150 => "5M",
+                180 => "6M",
+                365 => "1Y",
+                540 => "18M",
+                730 => "2Y",
+                1095 => "3Y",
+                1825 => "5Y",
+                2555 => "7Y",
+                2920 => "8Y",
+                3650 => "10Y",
+                7300 => "20Y",
+                10950 => "30Y",
+                _ => $"{days}d"
+            };
+
+            labels.Add(label);
+        }
+
+        return (labels, balances);
+    }
+
+    /// <summary>
+    /// Splitting points interval for charting in days
+    /// </summary>
+    /// <param name="term"></param>
+    /// <returns></returns>
+    private List<int> GetSplitPoints(string term)
+    {
+        return term switch
+        {
+            "1M" => new() { 7, 15, 30 },
+            "2M" => new() { 30, 60 },
+            "3M" => new() { 30, 60, 90 },
+            "6M" => new() { 30, 60, 90, 120, 150, 180 },
+            "1Y" => new() { 180, 365 },
+            "2Y" => new() { 180, 365, 540, 730 },
+            "3Y" => new() { 365, 730, 1095 },
+            "5Y" => new() { 730, 1095, 1825 },
+            "7Y" => new() { 1095, 2555, 2920 },
+            "10Y" => new() { 1825, 3650 },
+            "20Y" => new() { 3650, 7300 },
+            "30Y" => new() { 3650, 10950 },
+            _ => new() { }
+        };
+    }
+}

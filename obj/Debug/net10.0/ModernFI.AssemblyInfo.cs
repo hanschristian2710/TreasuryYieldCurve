@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ModernFI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9e16947b0f5704736a1aa091e8f5b9b42c70b4d6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+498d395db8f0e51e75aa07598f9dd7b4bb41b7c5")]
 [assembly: System.Reflection.AssemblyProductAttribute("ModernFI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ModernFI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
